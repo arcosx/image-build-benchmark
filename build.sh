@@ -45,17 +45,6 @@ function bb::test(){
         local took=$(echo ${end}-${begin} | bc)
         INFO "${desc}: done, took ${took} seconds"
         echo "${builder}-1,${took},${begin},${end}" >> ${csv}
-        desc="${i} of ${n}: ${builder} #2 (with dummy modification. cache can be potentially used.)"
-        date > ${dir}/$(bb::dummy_file_name)
-        INFO "${desc}: starting"
-        local begin=$(date +%s.%N)
-        ${builder}::build ${dir}
-        local end=$(date +%s.%N)
-        local took=$(echo ${end}-${begin} | bc)
-        INFO "${desc}: done, took ${took} seconds"
-        echo "${builder}-2,${took},${begin},${end}" >> ${csv}
-        INFO "${i} of ${n}: ${builder}: pruning"
-        rm -f ${dir}/$(bb::dummy_file_name)
         ${builder}::prune
     done
 }
@@ -67,14 +56,18 @@ function docker::init(){
     docker run --rm ${DOCKER_IMAGE} docker --version
 }
 function docker::prepare(){
+    INFO "begin prepare docker"
     docker volume create $(bb::volume_name docker)
     docker run --privileged --name $(bb::container_name docker) -d -v $(bb::volume_name docker):/var/lib/docker ${DOCKER_IMAGE} \
            -s overlay2
+    INFO "prepare docker success"
 }
 function docker::build(){
+    INFO "begin docker build"
     local dir="$1"
     docker run -v ${dir}:/workspace -w /workspace --rm --link $(bb::container_name docker):docker -e DOCKER_HOST=tcp://docker:2375 ${DOCKER_IMAGE} \
            docker build -t foo -q . > /dev/null 2>&1
+    INFO "docker build success"
 }
 function docker::prune(){
     docker rm -f $(bb::container_name docker)
