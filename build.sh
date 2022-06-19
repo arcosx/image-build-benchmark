@@ -3,7 +3,7 @@
 set -eu -o pipefail
 # set -x
 export LANG=C LC_ALL=C
-# cd $(dirname $0)
+cd $(dirname $0)
 
 BUILDKIT_IMAGE="moby/buildkit:latest"
 
@@ -123,8 +123,9 @@ if [ "$#" -ne 4 ]; then
     echo "Usage: $0 DIR CSV N DINDIMG"
     exit 1
 fi
-INFO "DEBUG PWD ${PWD}"
-INFO "DEBUG 1p $1"
+NOW=$(ls ${PWD})
+INFO "DEBUG NOW ${NOW}"
+
 DIR=$(realpath "$1")
 CSV="$2"
 N="$3"
