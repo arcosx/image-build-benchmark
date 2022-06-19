@@ -28,6 +28,6 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: build
         run: |
-          ./build.sh ./dockerfiles/01  out.csv 1
+          ./build.sh ./dockerfiles/01  out.csv 5
           cat out.csv
               
