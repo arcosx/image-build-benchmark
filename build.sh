@@ -116,8 +116,8 @@ function buildkit::prune(){
 
 
 ### Main
-if [ "$#" -ne 3 ]; then
-    echo "Usage: $0 DIR CSV N"
+if [ "$#" -ne 4 ]; then
+    echo "Usage: $0 DIR CSV N DINDIMG"
     exit 1
 fi
 DIR=$(realpath "$1")
