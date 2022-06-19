@@ -36,7 +36,7 @@ jobs:
           echo "matrix.path ${{ matrix.path }}"
           echo "matrix.dindimg ${{ matrix.dindimg }}"
 
-          ./build.sh ${{ matrix.path }} out.csv 2 ${{ matrix.dindimg }}
+          ./build.sh ./dockerfiles/01 out.csv 2 ${{ matrix.dindimg }}
           echo "benchmark end."
           cat out.csv
               
