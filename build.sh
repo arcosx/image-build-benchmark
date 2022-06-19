@@ -3,7 +3,7 @@
 set -eu -o pipefail
 # set -x
 export LANG=C LC_ALL=C
-cd $(dirname $0)
+# cd $(dirname $0)
 
 BUILDKIT_IMAGE="moby/buildkit:latest"
 
