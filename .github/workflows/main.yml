@@ -19,7 +19,8 @@ jobs:
   build:
     strategy:
       matrix:
-        dindimg: ["docker:18.09-dind","docker:19.03-dind","docker:20.10-dind"]
+        # dindimg: ["docker:18.09-dind","docker:19.03-dind","docker:20.10-dind"]
+        dindimg: ["docker:18.09-dind"]
         path: ["dockerfiles/01","dockerfiles/pytorchnocuda","dockerfiles/pytorchcuda"]
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
