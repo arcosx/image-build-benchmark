@@ -65,6 +65,7 @@ function docker::prepare(){
 function docker::build(){
     INFO "begin docker build"
     local dir="$1"
+    DEBUG "[debug] ${dir}"
     docker run -v ${dir}:/workspace -w /workspace --rm --link $(bb::container_name docker):docker -e DOCKER_HOST=tcp://docker:2375 ${DOCKER_IMAGE} \
            docker build -t foo -q . > /dev/null 2>&1
     INFO "docker build success"
@@ -111,7 +112,12 @@ fi
 DIR=$(realpath "$1")
 CSV="$2"
 N="$3"
+
 builders=(docker buildkit)
+
+INFO "DEBUG DIR ${DIR}"
+INFO "DEBUG CSV ${CSV}"
+INFO "DEBUG N ${N}"
 
 for builder in ${builders[@]}; do
     only=ONLY_$(echo ${builder} | tr a-z A-Z)
