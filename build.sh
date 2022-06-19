@@ -131,8 +131,8 @@ DINDIMG="$4"
 
 builders=(docker buildkit)
 
-NOW=$(ls ${DIR})
-INFO "DEBUG NOW ${NOW}"
+# NOW=$(ls ${DIR})
+# INFO "DEBUG NOW ${NOW}"
 INFO "DEBUG DIR ${DIR}"
 INFO "DEBUG CSV ${CSV}"
 INFO "DEBUG N ${N}"
