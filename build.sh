@@ -77,6 +77,9 @@ function docker::build(){
     INFO "begin docker build"
     local dir="$1"
     local dindimg="$2"
+    INFO "DEBUG dir${dir}"
+    INFO "DEBUG dindimg ${dindimg}"
+    
     docker run -v ${dir}:/workspace -w /workspace --rm --link $(bb::container_name docker):docker -e DOCKER_HOST=tcp://docker:2375 ${dindimg} \
            docker build -t foo -q . > /dev/null 2>&1
     INFO "docker build success"
@@ -130,6 +133,7 @@ builders=(docker buildkit)
 INFO "DEBUG DIR ${DIR}"
 INFO "DEBUG CSV ${CSV}"
 INFO "DEBUG N ${N}"
+INFO "DEBUG DINDIMG ${DINDIMG}"
 
 for builder in ${builders[@]}; do
     bb::test ${builder} ${DIR} ${CSV} ${N} ${DINDIMG}
