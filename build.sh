@@ -65,7 +65,7 @@ function docker::prepare(){
 function docker::build(){
     INFO "begin docker build"
     local dir="$1"
-    DEBUG "[debug] ${dir}"
+    INFO "[debug] ${dir}"
     docker run -v ${dir}:/workspace -w /workspace --rm --link $(bb::container_name docker):docker -e DOCKER_HOST=tcp://docker:2375 ${DOCKER_IMAGE} \
            docker build -t foo -q . > /dev/null 2>&1
     INFO "docker build success"
