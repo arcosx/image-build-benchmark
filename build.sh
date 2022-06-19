@@ -123,6 +123,8 @@ if [ "$#" -ne 4 ]; then
     echo "Usage: $0 DIR CSV N DINDIMG"
     exit 1
 fi
+INFO "DEBUG PWD ${PWD}"
+INFO "DEBUG 1p $1"
 DIR=$(realpath "$1")
 CSV="$2"
 N="$3"
