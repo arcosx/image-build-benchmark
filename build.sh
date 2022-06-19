@@ -5,11 +5,7 @@ set -eu -o pipefail
 export LANG=C LC_ALL=C
 cd $(dirname $0)
 
-### Constants
-# April 11, 2019
-DOCKER_IMAGE="docker:18.09-dind"
-# March 14, 2019
-BUILDKIT_IMAGE="moby/buildkit:v0.4.0"
+BUILDKIT_IMAGE="moby/buildkit:latest"
 
 
 ### Common
@@ -30,42 +26,58 @@ function bb::test(){
     local dir="$2"
     local csv="$3"
     local n="$4"
+    local dindimg="$5"
+
     INFO "Initializing ${builder}"
     ${builder}::prune || true
-    ${builder}::init
+    ${builder}::init ${dindimg}
     for i in $(seq 1 ${n});do
         INFO "${i} of ${n}: ${builder}: preparing"
         rm -f ${dir}/$(bb::dummy_file_name)
-        ${builder}::prepare
+        ${builder}::prepare ${dindimg}
         local desc="${i} of ${n}: ${builder} #1 (clean env)"
         INFO "${desc}: starting"
         local begin=$(date +%s.%N)
-        ${builder}::build ${dir}
+        ${builder}::build ${dir} ${dindimg}
         local end=$(date +%s.%N)
         local took=$(echo ${end}-${begin} | bc)
         INFO "${desc}: done, took ${took} seconds"
         echo "${builder}-1,${took},${begin},${end}" >> ${csv}
+        desc="${i} of ${n}: ${builder} #2 (with dummy modification. cache can be potentially used.)"
+        date > ${dir}/$(bb::dummy_file_name)
+        INFO "${desc}: starting"
+        local begin=$(date +%s.%N)
+        ${builder}::build ${dir} ${dindimg}
+        local end=$(date +%s.%N)
+        local took=$(echo ${end}-${begin} | bc)
+        INFO "${desc}: done, took ${took} seconds"
+        echo "${builder}-2,${took},${begin},${end}" >> ${csv}
+        INFO "${i} of ${n}: ${builder}: pruning"
+        rm -f ${dir}/$(bb::dummy_file_name)
         ${builder}::prune
     done
 }
 
 ### Docker
 function docker::init(){
-    docker pull ${DOCKER_IMAGE}
+    local dindimg="$1"
+    docker pull ${dindimg}
     INFO "Docker version"
-    docker run --rm ${DOCKER_IMAGE} docker --version
+    docker run --rm ${dindimg} docker --version
 }
 function docker::prepare(){
+    local dindimg="$1"
     INFO "begin prepare docker"
     docker volume create $(bb::volume_name docker)
-    docker run --privileged --name $(bb::container_name docker) -d -v $(bb::volume_name docker):/var/lib/docker ${DOCKER_IMAGE} \
+    docker run --privileged --name $(bb::container_name docker) -d -v $(bb::volume_name docker):/var/lib/docker ${dindimg} \
            -s overlay2
     INFO "prepare docker success"
 }
 function docker::build(){
     INFO "begin docker build"
     local dir="$1"
-    docker run -v ${dir}:/workspace -w /workspace --rm --link $(bb::container_name docker):docker -e DOCKER_HOST=tcp://docker:2375 ${DOCKER_IMAGE} \
+    local dindimg="$2"
+    docker run -v ${dir}:/workspace -w /workspace --rm --link $(bb::container_name docker):docker -e DOCKER_HOST=tcp://docker:2375 ${dindimg} \
            docker build -t foo -q . > /dev/null 2>&1
     INFO "docker build success"
 }
@@ -111,6 +123,7 @@ fi
 DIR=$(realpath "$1")
 CSV="$2"
 N="$3"
+DINDIMG="$4"
 
 builders=(docker buildkit)
 
@@ -119,19 +132,5 @@ INFO "DEBUG CSV ${CSV}"
 INFO "DEBUG N ${N}"
 
 for builder in ${builders[@]}; do
-    only=ONLY_$(echo ${builder} | tr a-z A-Z)
-    if [[ ! -z ${!only-} ]]; then
-        INFO "Only running ${builder}"
-        bb::test ${builder} ${DIR} ${CSV} ${N}
-        exit
-    fi
-done
-
-for builder in ${builders[@]}; do
-    disable=DISABLE_$(echo ${builder} | tr a-z A-Z)
-    if [[ ! -z ${!disable-} ]]; then
-        INFO "Skipping ${builder}"
-    else
-        bb::test ${builder} ${DIR} ${CSV} ${N}
-    fi
+    bb::test ${builder} ${DIR} ${CSV} ${N} ${DINDIMG}
 done
