@@ -77,7 +77,7 @@ function docker::build(){
     INFO "begin docker build"
     local dir="$1"
     local dindimg="$2"
-    INFO "DEBUG dir${dir}"
+    INFO "DEBUG dir ${dir}"
     INFO "DEBUG dindimg ${dindimg}"
     
     docker run -v ${dir}:/workspace -w /workspace --rm --link $(bb::container_name docker):docker -e DOCKER_HOST=tcp://docker:2375 ${dindimg} \

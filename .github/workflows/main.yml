@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix:
         dindimg: ["docker:18.09-dind","docker:19.03-dind","docker:20.10-dind"]
-        path: ["./dockerfiles/01","./dockerfiles/pytorchnocuda","./dockerfiles/pytorchcuda"]
+        path: ["dockerfiles/01","dockerfiles/pytorchnocuda","dockerfiles/pytorchcuda"]
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -33,6 +33,9 @@ jobs:
       - name: build
         run: |
           echo "start image build benchmark..."
+          echo "matrix.path ${{ matrix.path }}"
+          echo "matrix.dindimg ${{ matrix.dindimg }}"
+          
           ./build.sh ${{ matrix.path }}  out.csv 2 ${{matrix.dindimg}}
           echo "benchmark end."
           cat out.csv
