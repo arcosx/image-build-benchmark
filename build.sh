@@ -123,8 +123,6 @@ if [ "$#" -ne 4 ]; then
     echo "Usage: $0 DIR CSV N DINDIMG"
     exit 1
 fi
-NOW=$(ls ${PWD})
-INFO "DEBUG NOW ${NOW}"
 
 DIR=$(realpath "$1")
 CSV="$2"
@@ -133,6 +131,8 @@ DINDIMG="$4"
 
 builders=(docker buildkit)
 
+NOW=$(ls ${PWD})
+INFO "DEBUG NOW ${NOW}"
 INFO "DEBUG DIR ${DIR}"
 INFO "DEBUG CSV ${CSV}"
 INFO "DEBUG N ${N}"
