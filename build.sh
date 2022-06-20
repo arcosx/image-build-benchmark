@@ -116,6 +116,9 @@ function docker::build(){
 function docker::prune(){
     docker rm -f $(bb::container_name docker)
     docker volume rm -f $(bb::volume_name docker)
+    docker volume rm -f docker-certs-ca
+    docker volume rm -f docker-certs-client
+    docker network rm -f dind-network
 }
 
 ### BuildKit
