@@ -102,7 +102,9 @@ function docker::build(){
         docker build -t foo -q . > /dev/null 2>&1
     else
         INFO "dind version is not 18.09"
+        docker logs $(bb::container_name docker)
         docker run --rm --network dind-network \
+                    -e DOCKER_HOST=tcp://docker:2376 \
                     -e DOCKER_TLS_CERTDIR=/certs \
                     -v docker-certs-client:/certs/client:ro \
                     -v ${dir}:/workspace -w /workspace \
