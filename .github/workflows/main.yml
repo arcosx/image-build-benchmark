@@ -15,40 +15,72 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  build_18_09_01:
+  buildkit_01:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: build
         run: |
           echo "start image build benchmark..."
-          ./build.sh dockerfiles/01 out.csv 2 docker:18.09-dind both
+          ./build.sh dockerfiles/01 out.csv 2 docker:18.09-dind buildkit
+          echo "benchmark end."
+          cat out.csv
+  buildkit_pytorchnocuda:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: build
+        run: |
+          echo "start image build benchmark..."
+          ./build.sh dockerfiles/pytorchnocuda out.csv 2 docker:18.09-dind buildkit
           echo "benchmark end."
           cat out.csv
 
-#   build_18_09_pytorchnocuda:
+  buildkit_pytorchcuda:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: build
+        run: |
+          echo "start image build benchmark..."
+          ./build.sh dockerfiles/pytorchcuda out.csv 2 docker:18.09-dind buildkit
+          echo "benchmark end."
+          cat out.csv
+
+  docker_18_09_01:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: build
+        run: |
+          echo "start image build benchmark..."
+          ./build.sh dockerfiles/01 out.csv 2 docker:18.09-dind docker
+          echo "benchmark end."
+          cat out.csv
+
+#   docker_18_09_pytorchnocuda:
 #     runs-on: ubuntu-latest
 #     steps:
 #       - uses: actions/checkout@v3
 #       - name: build
 #         run: |
 #           echo "start image build benchmark..."
-#           ./build.sh dockerfiles/pytorchnocuda out.csv 2 docker:18.09-dind both
+#           ./build.sh dockerfiles/pytorchnocuda out.csv 2 docker:18.09-dind docker
 #           echo "benchmark end."
 #           cat out.csv
 
-#   build_18_09_pytorchcuda:
+#   docker_18_09_pytorchcuda:
 #     runs-on: ubuntu-latest
 #     steps:
 #       - uses: actions/checkout@v3
 #       - name: build
 #         run: |
 #           echo "start image build benchmark..."
-#           ./build.sh dockerfiles/pytorchcuda out.csv 2 docker:18.09-dind both
+#           ./build.sh dockerfiles/pytorchcuda out.csv 2 docker:18.09-dind docker
 #           echo "benchmark end."
 #           cat out.csv
 # # ----------------------
-#   build_19_03_01:
+#   docker_19_03_01:
 #     runs-on: ubuntu-latest
 #     steps:
 #       - uses: actions/checkout@v3
@@ -59,7 +91,7 @@ jobs:
 #           echo "benchmark end."
 #           cat out.csv
 
-#   build_19_03_pytorchnocuda:
+#   docker_19_03_pytorchnocuda:
 #     runs-on: ubuntu-latest
 #     steps:
 #       - uses: actions/checkout@v3
@@ -70,7 +102,7 @@ jobs:
 #           echo "benchmark end."
 #           cat out.csv
 
-#   build_19_03_pytorchcuda:
+#   docker_19_03_pytorchcuda:
 #     runs-on: ubuntu-latest
 #     steps:
 #       - uses: actions/checkout@v3
@@ -81,7 +113,7 @@ jobs:
 #           echo "benchmark end."
 #           cat out.csv
 # # ----------------------
-#   build_20_10_01:
+#   docker_20_10_01:
 #     runs-on: ubuntu-latest
 #     steps:
 #       - uses: actions/checkout@v3
@@ -92,7 +124,7 @@ jobs:
 #           echo "benchmark end."
 #           cat out.csv
 
-#   build_20_10_pytorchnocuda:
+#   docker_20_10_pytorchnocuda:
 #     runs-on: ubuntu-latest
 #     steps:
 #       - uses: actions/checkout@v3
@@ -103,7 +135,7 @@ jobs:
 #           echo "benchmark end."
 #           cat out.csv
 
-#   build_20_10_pytorchcuda:
+#   docker_20_10_pytorchcuda:
 #     runs-on: ubuntu-latest
 #     steps:
 #       - uses: actions/checkout@v3

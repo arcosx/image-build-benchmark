@@ -43,11 +43,12 @@ function bb::test(){
         ${builder}::build ${dir} ${dindimg}
         local end=$(date +%s.%N)
         local took=$(echo ${end}-${begin} | bc)
-        local size=$(${builder}::imageSize ${dindimg})
 
         if [ "$builder" == "docker" ]; then
+            local size=$(${builder}::imageSize ${dindimg})
             echo "docker,${dindimg},1,${took},${size}" >> ${csv}    
         else
+            local size=$(${builder}::imageSize ${dir})
             echo "buildkit,latest,1,${took},${size}" >> ${csv}
         fi
 
