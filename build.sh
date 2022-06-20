@@ -118,7 +118,7 @@ function docker::prune(){
     docker volume rm -f $(bb::volume_name docker)
     docker volume rm -f docker-certs-ca
     docker volume rm -f docker-certs-client
-    docker network rm -f dind-network
+    docker network rm dind-network
 }
 
 ### BuildKit
