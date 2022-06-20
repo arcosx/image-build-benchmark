@@ -15,9 +15,7 @@ function INFO(){
 function bb::volume_name(){
     echo "buildbench-$1"
 }
-function bb::network_name(){
-    echo "buildbench-$1"
-}
+
 function bb::container_name(){
     echo "buildbench-$1"
 }
@@ -74,7 +72,7 @@ function docker::prepare(){
     docker volume create $(bb::volume_name docker)
     docker volume create docker-certs-ca
     docker volume create docker-certs-client   
-    docker network create $(bb::network_name docker)
+    docker network create dind-network
 
     if [ "$dindimg" == "docker:18.09-dind" ]; then
         INFO "dind is docker 18.09"
@@ -83,7 +81,7 @@ function docker::prepare(){
     else
         INFO "dind version is not 18.09"
         docker run --privileged --name $(bb::container_name docker) -d \
-                    --network $(bb::network_name docker) --network-alias docker \
+                    --network dind-network --network-alias docker \
                     -v $(bb::volume_name docker):/var/lib/docker \
                     -e DOCKER_TLS_CERTDIR=/certs \                                            
                     -v docker-certs-ca:/certs/ca \                                       
@@ -105,7 +103,7 @@ function docker::build(){
         docker build -t foo -q . > /dev/null 2>&1
     else
         INFO "dind version is not 18.09"
-        docker run --rm --network $(bb::network_name docker) \
+        docker run --rm --network dind-network \
                     -e DOCKER_TLS_CERTDIR=/certs \
                     -v docker-certs-client:/certs/client:ro \
                     -v ${dir}:/workspace -w /workspace \
