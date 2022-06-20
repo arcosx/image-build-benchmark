@@ -77,9 +77,7 @@ function docker::prepare(){
         INFO "dind version is not 18.09"
         docker run --privileged --name $(bb::container_name docker) -d \
                     -v $(bb::volume_name docker):/var/lib/docker \
-                    -e DOCKER_TLS_CERTDIR=/certs \
-                    -v docker-certs-ca:/certs/ca \
-                    -v docker-certs-client:/certs/client \
+                    -e DOCKER_TLS_VERIFY=0 \
                     ${dindimg} -s overlay2
     fi
     INFO "prepare docker success"
@@ -96,12 +94,10 @@ function docker::build(){
         docker build -t foo -q . > /dev/null 2>&1
     else
         INFO "dind version is not 18.09"
-        docker logs -f $(bb::container_name docker)
+        docker logs --tail 100 $(bb::container_name docker)
         docker run --rm --link $(bb::container_name docker):docker \
-                    -e DOCKER_HOST=tcp://docker:2376 \
-                    -e DOCKER_TLS_CERTDIR=/certs \
+                    -e DOCKER_HOST=tcp://docker:2375 \
                     -v ${dir}:/workspace -w /workspace \
-                    -v docker-certs-client:/certs/client:ro \
                     ${dindimg} \
                     docker build -t foo -q .
     fi
