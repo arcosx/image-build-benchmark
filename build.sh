@@ -80,8 +80,10 @@ function docker::build(){
     INFO "DEBUG dir ${dir}"
     INFO "DEBUG dindimg ${dindimg}"
     
+    # docker run -v ${dir}:/workspace -w /workspace --rm --link $(bb::container_name docker):docker -e DOCKER_HOST=tcp://docker:2375 ${dindimg} \
+    #        docker build -t foo -q . > /dev/null 2>&1
     docker run -v ${dir}:/workspace -w /workspace --rm --link $(bb::container_name docker):docker -e DOCKER_HOST=tcp://docker:2375 ${dindimg} \
-           docker build -t foo -q . > /dev/null 2>&1
+        docker build -t foo -q . 
     INFO "docker build success"
 }
 function docker::prune(){
