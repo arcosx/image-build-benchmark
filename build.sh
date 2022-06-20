@@ -69,8 +69,19 @@ function docker::prepare(){
     local dindimg="$1"
     INFO "begin prepare docker"
     docker volume create $(bb::volume_name docker)
-    docker run --privileged --name $(bb::container_name docker) -d -v $(bb::volume_name docker):/var/lib/docker ${dindimg} \
-           -s overlay2
+    if [ "$x" = "docker:18.09-dind"]; then
+        INFO "dind is docker 18.09"
+        docker run --privileged --name $(bb::container_name docker) -d -v $(bb::volume_name docker):/var/lib/docker ${dindimg} \
+            -s overlay2
+    else
+        INFO "dind version is not 18.09"
+        docker run --privileged --name $(bb::container_name docker) -d \
+                    -v $(bb::volume_name docker):/var/lib/docker \
+                    -e DOCKER_TLS_CERTDIR=/certs \
+                    -v docker-certs-ca:/certs/ca \
+                    -v docker-certs-client:/certs/client \
+                    ${dindimg} -s overlay2
+    fi
     INFO "prepare docker success"
 }
 function docker::build(){
@@ -79,11 +90,19 @@ function docker::build(){
     local dindimg="$2"
     INFO "DEBUG dir ${dir}"
     INFO "DEBUG dindimg ${dindimg}"
-    docker logs -f $(bb::container_name docker)
-    # docker run -v ${dir}:/workspace -w /workspace --rm --link $(bb::container_name docker):docker -e DOCKER_HOST=tcp://docker:2375 ${dindimg} \
-    #        docker build -t foo -q . > /dev/null 2>&1
-    docker run -v ${dir}:/workspace -w /workspace --rm --link $(bb::container_name docker):docker -e DOCKER_HOST=tcp://docker:2375 ${dindimg} \
-        docker build -t foo -q . 
+    if [ "$x" = "docker:18.09-dind"]; then
+        INFO "dind is docker 18.09"
+        docker run -v ${dir}:/workspace -w /workspace --rm --link $(bb::container_name docker):docker -e DOCKER_HOST=tcp://docker:2375 ${dindimg} \
+        docker build -t foo -q . > /dev/null 2>&1
+    else
+        INFO "dind version is not 18.09"
+        docker run --rm --link $(bb::container_name docker):docker \
+                    -e DOCKER_TLS_CERTDIR=/certs \
+                    -v ${dir}:/workspace -w /workspace \
+                    -v docker-certs-client:/certs/client:ro \
+                    ${dindimg} \
+                    docker build -t foo -q .
+    fi
     INFO "docker build success"
 }
 function docker::prune(){
