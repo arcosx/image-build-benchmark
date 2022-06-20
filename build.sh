@@ -133,9 +133,8 @@ function docker::build(){
 function docker::imageSize() {
     local dindimg="$1"
     if [ "$dindimg" == "docker:18.09-dind" ]; then
-        INFO "dind is docker 18.09"
         docker run -v ${dir}:/workspace -w /workspace --rm --link $(bb::container_name docker):docker -e DOCKER_HOST=tcp://docker:2375 ${dindimg} \
-        echo $(docker images docker-build --format "{{.Size}}")
+        docker images docker-build --format "{{.Size}}"
     else
         docker run --rm --network dind-network \
                     -e DOCKER_HOST=tcp://docker:2376 \
@@ -143,7 +142,7 @@ function docker::imageSize() {
                     -v docker-certs-client:/certs/client:ro \
                     -v ${dir}:/workspace -w /workspace \
                     ${dindimg} \
-                    echo $(docker images docker-build --format "{{.Size}}")
+                    docker images docker-build --format "{{.Size}}"
     fi
 }
 
