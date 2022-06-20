@@ -43,12 +43,11 @@ function bb::test(){
         ${builder}::build ${dir} ${dindimg}
         local end=$(date +%s.%N)
         local took=$(echo ${end}-${begin} | bc)
-
+        local size="$(${builder}::imageSize ${dir} ${dindimg})"
+        
         if [ "$builder" == "docker" ]; then
-            local size=$(${builder}::imageSize ${dindimg})
             echo "docker,${dindimg},1,${took},${size}" >> ${csv}    
         else
-            local size=$(${builder}::imageSize ${dir})
             echo "buildkit,latest,1,${took},${size}" >> ${csv}
         fi
 
@@ -61,7 +60,7 @@ function bb::test(){
         local end=$(date +%s.%N)
         local took=$(echo ${end}-${begin} | bc)
 
-        local size="$(${builder}::imageSize ${dindimg})"
+        local size="$(${builder}::imageSize ${dir} ${dindimg})"
 
         if [ "$builder" == "docker" ]; then
             echo "docker,${dindimg},2,${took},${size}" >> ${csv}    
@@ -132,7 +131,7 @@ function docker::build(){
 }
 
 function docker::imageSize() {
-    local dindimg="$1"
+    local dindimg="$2"
     if [ "$dindimg" == "docker:18.09-dind" ]; then
         docker run -v ${dir}:/workspace -w /workspace --rm --link $(bb::container_name docker):docker -e DOCKER_HOST=tcp://docker:2375 ${dindimg} \
         docker images docker-build --format "{{.Size}}"
@@ -195,7 +194,7 @@ function buildkit::imageSize(){
            -e BUILDKIT_HOST=tcp://buildkit:1234 \
            --entrypoint buildctl \
            ${BUILDKIT_IMAGE} \
-           build --frontend=dockerfile.v0 --local context=. --local dockerfile=. --output type=docker,name=buildkit-build,dest=buildkit-build.tar > /dev/null
+           build --frontend=dockerfile.v0 --local context=. --local dockerfile=. --output type=docker,name=buildkit-build,dest=buildkit-build.tar > /dev/null 2>&1
     docker load -i buildkit-build.tar > /dev/null
     echo $(docker images buildkit-build --format "{{.Size}}")
 }
