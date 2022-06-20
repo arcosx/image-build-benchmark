@@ -69,7 +69,7 @@ function docker::prepare(){
     local dindimg="$1"
     INFO "begin prepare docker"
     docker volume create $(bb::volume_name docker)
-    if [ "$dindimg" = "docker:18.09-dind"]; then
+    if [ "$dindimg" == "docker:18.09-dind"]; then
         INFO "dind is docker 18.09"
         docker run --privileged --name $(bb::container_name docker) -d -v $(bb::volume_name docker):/var/lib/docker ${dindimg} \
             -s overlay2
@@ -88,13 +88,13 @@ function docker::build(){
     local dindimg="$2"
     INFO "DEBUG dir ${dir}"
     INFO "DEBUG dindimg ${dindimg}"
-    if [ "$dindimg" = "docker:18.09-dind"]; then
+    if [ "$dindimg" == "docker:18.09-dind"]; then
         INFO "dind is docker 18.09"
         docker run -v ${dir}:/workspace -w /workspace --rm --link $(bb::container_name docker):docker -e DOCKER_HOST=tcp://docker:2375 ${dindimg} \
         docker build -t foo -q . > /dev/null 2>&1
     else
         INFO "dind version is not 18.09"
-        docker logs --tail 100 $(bb::container_name docker)
+        docker logs --tail 200 $(bb::container_name docker)
         docker run --rm --link $(bb::container_name docker):docker \
                     -e DOCKER_HOST=tcp://docker:2375 \
                     -v ${dir}:/workspace -w /workspace \
