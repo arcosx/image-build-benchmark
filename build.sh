@@ -123,6 +123,7 @@ function docker::build(){
 }
 
 function docker::imageSize() {
+    INFO $(docker images)
     echo $(docker images docker-build --format "{{.Size}}")
 }
 
@@ -157,7 +158,7 @@ function buildkit::build(){
            -e BUILDKIT_HOST=tcp://buildkit:1234 \
            --entrypoint buildctl \
            ${BUILDKIT_IMAGE} \
-           build --frontend=dockerfile.v0 --local context=. --local dockerfile=. --output type=docker,name=buildkit-build > buildkit-build.tar
+           build --frontend=dockerfile.v0 --local context=. --local dockerfile=. --output type=docker,name=buildkit-build > buildkit-build.tar 2>&1
 }
 function buildkit::prune(){
     docker rm -f $(bb::container_name buildkit)
@@ -165,7 +166,7 @@ function buildkit::prune(){
 }
 
 function buildkit::imageSize(){
-    docker load -i buildkit-build.tar
+    docker load -i buildkit-build.tar > /dev/null 2>&1
     echo $(docker images buildkit-build --format "{{.Size}}")
 }
 
