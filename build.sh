@@ -43,10 +43,13 @@ function bb::test(){
         ${builder}::build ${dir} ${dindimg}
         local end=$(date +%s.%N)
         local took=$(echo ${end}-${begin} | bc)
-        local size="$(${builder}::imageSize)"
-        INFO "${desc}: done, took ${took} seconds"
-        echo "${builder},1,${took},${size}" >> ${csv}
+        local size="$(${builder}::imagesSize ${dindimg})"
 
+        if [ "$builder" == "docker" ]; then
+            echo "docker,${dindimg},1,${took},${size}" >> ${csv}    
+        else
+            echo "buildkit,latest,1,${took},${size}" >> ${csv}
+        fi
 
         desc="${i} of ${n}: ${builder} #2 (with dummy modification. cache can be potentially used.)"
         date > ${dir}/$(bb::dummy_file_name)
@@ -56,9 +59,14 @@ function bb::test(){
         ${builder}::build ${dir} ${dindimg}
         local end=$(date +%s.%N)
         local took=$(echo ${end}-${begin} | bc)
-        local size="$(${builder}::imageSize)"
-        INFO "${desc}: done, took ${took} seconds"
-        echo "${builder},2,${took},${size}" >> ${csv}
+        
+        local size="$(${builder}::imagesSize ${dindimg})"
+
+        if [ "$builder" == "docker" ]; then
+            echo "docker,${dindimg},1,${took},${size}" >> ${csv}    
+        else
+            echo "buildkit,latest,1,${took},${size}" >> ${csv}
+        fi
 
 
         INFO "${i} of ${n}: ${builder}: pruning"
@@ -123,8 +131,20 @@ function docker::build(){
 }
 
 function docker::imageSize() {
-    INFO $(docker images)
-    echo $(docker images docker-build --format "{{.Size}}")
+    local dindimg="$1"
+    if [ "$dindimg" == "docker:18.09-dind" ]; then
+        INFO "dind is docker 18.09"
+        docker run -v ${dir}:/workspace -w /workspace --rm --link $(bb::container_name docker):docker -e DOCKER_HOST=tcp://docker:2375 ${dindimg} \
+        echo $(docker images docker-build --format "{{.Size}}")
+    else
+        docker run --rm --network dind-network \
+                    -e DOCKER_HOST=tcp://docker:2376 \
+                    -e DOCKER_TLS_CERTDIR=/certs \
+                    -v docker-certs-client:/certs/client:ro \
+                    -v ${dir}:/workspace -w /workspace \
+                    ${dindimg} \
+                    echo $(docker images docker-build --format "{{.Size}}")
+    fi
 }
 
 function docker::prune(){
@@ -158,7 +178,7 @@ function buildkit::build(){
            -e BUILDKIT_HOST=tcp://buildkit:1234 \
            --entrypoint buildctl \
            ${BUILDKIT_IMAGE} \
-           build --frontend=dockerfile.v0 --local context=. --local dockerfile=. --output type=docker,name=buildkit-build > buildkit-build.tar 2>&1
+           build --frontend=dockerfile.v0 --local context=. --local dockerfile=. --output type=docker,name=buildkit-build > buildkit-build.tar
 }
 function buildkit::prune(){
     docker rm -f $(bb::container_name buildkit)
@@ -166,7 +186,7 @@ function buildkit::prune(){
 }
 
 function buildkit::imageSize(){
-    docker load -i buildkit-build.tar > /dev/null 2>&1
+    docker load -i buildkit-build.tar > /dev/null
     echo $(docker images buildkit-build --format "{{.Size}}")
 }
 
