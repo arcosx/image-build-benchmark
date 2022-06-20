@@ -12,8 +12,7 @@ Look at this summary report ! [TODO]
 
 
 #### for your own images
-fork this project, modify [.github/workflows/main.yml](.github/workflows/main.yml)，
-Of course you can also run it locally.
+fork this project, modify [.github/workflows/main.yml](.github/workflows/main.yml).Of course you can also run it locally.
 
 ```shell
 $ ./build.sh ${DOCKER_FILE_DIR} ${OUTPUT_CSV_PATH} ${RUN_TIMES} ${DIND_IMAGE} ${BUILDER}
