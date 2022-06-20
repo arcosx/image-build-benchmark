@@ -194,8 +194,8 @@ function buildkit::imageSize(){
            -e BUILDKIT_HOST=tcp://buildkit:1234 \
            --entrypoint buildctl \
            ${BUILDKIT_IMAGE} \
-           build --frontend=dockerfile.v0 --local context=. --local dockerfile=. --output type=oci,name=buildkit-build,dest=${dir}/buildkit-build.tar > /dev/null 2>&1
-    docker load -i ${dir}/buildkit-build.tar > /dev/null
+           build --frontend=dockerfile.v0 --local context=. --local dockerfile=. --output type=docker,name=buildkit-build > buildkit-build.tar > /dev/null 2>&1
+    docker load -i buildkit-build.tar > /dev/null
     echo $(docker images buildkit-build --format "{{.Size}}")
 }
 
