@@ -72,6 +72,8 @@ function docker::prepare(){
     local dindimg="$1"
     INFO "begin prepare docker"
     docker volume create $(bb::volume_name docker)
+    docker volume create docker-certs-ca
+    docker volume create docker-certs-client   
     docker network create $(bb::network_name docker)
 
     if [ "$dindimg" == "docker:18.09-dind" ]; then
@@ -86,8 +88,9 @@ function docker::prepare(){
                     -e DOCKER_TLS_CERTDIR=/certs \                                            
                     -v docker-certs-ca:/certs/ca \                                       
                     -v docker-certs-client:/certs/client \ 
-                    ${dindimg} -s overlay2
+                    ${dindimg}
     fi
+    docker logs $(bb::container_name docker)
     INFO "prepare docker success"
 }
 function docker::build(){
