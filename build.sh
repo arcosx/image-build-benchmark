@@ -85,9 +85,9 @@ function docker::prepare(){
             -e DOCKER_TLS_CERTDIR=/certs \
             -v docker-certs-ca:/certs/ca \
             -v docker-certs-client:/certs/client \
-            docker:dind
+            ${dindimg}
     fi
-    docker logs $(bb::container_name docker)
+    sleep 15
     INFO "prepare docker success"
 }
 function docker::build(){
@@ -102,7 +102,7 @@ function docker::build(){
         docker build -t foo -q . > /dev/null 2>&1
     else
         INFO "dind version is not 18.09"
-        docker logs $(bb::container_name docker)
+        docker logs --tail 30 $(bb::container_name docker)
         docker run --rm --network dind-network \
                     -e DOCKER_HOST=tcp://docker:2376 \
                     -e DOCKER_TLS_CERTDIR=/certs \
