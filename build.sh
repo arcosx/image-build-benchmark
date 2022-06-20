@@ -43,7 +43,7 @@ function bb::test(){
         ${builder}::build ${dir} ${dindimg}
         local end=$(date +%s.%N)
         local took=$(echo ${end}-${begin} | bc)
-        local size=${builder}::imageSize
+        local size="$(${builder}::imageSize)"
         INFO "${desc}: done, took ${took} seconds"
         echo "${builder},1,${took},${size}" >> ${csv}
 
@@ -56,6 +56,7 @@ function bb::test(){
         ${builder}::build ${dir} ${dindimg}
         local end=$(date +%s.%N)
         local took=$(echo ${end}-${begin} | bc)
+        local size="$(${builder}::imageSize)"
         INFO "${desc}: done, took ${took} seconds"
         echo "${builder},2,${took},${size}" >> ${csv}
 
