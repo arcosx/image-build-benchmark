@@ -97,6 +97,7 @@ function docker::build(){
     else
         INFO "dind version is not 18.09"
         docker run --rm --link $(bb::container_name docker):docker \
+                    -e DOCKER_HOST=tcp://docker:2376
                     -e DOCKER_TLS_CERTDIR=/certs \
                     -v ${dir}:/workspace -w /workspace \
                     -v docker-certs-client:/certs/client:ro \
