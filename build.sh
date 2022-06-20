@@ -193,7 +193,7 @@ INFO "DEBUG DIR ${DIR}"
 INFO "DEBUG CSV ${CSV}"
 INFO "DEBUG N ${N}"
 INFO "DEBUG DINDIMG ${DINDIMG}"
-INFO "DEBUG SPECIFIC ${SPECIFIC}"
+INFO "DEBUG BUILDER ${BUILDER}"
 
 if [ "$BUILDER" == "both" ]; then
     INFO "Both docker and buildkit will be test"
