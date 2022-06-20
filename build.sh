@@ -81,12 +81,11 @@ function docker::prepare(){
     else
         INFO "dind version is not 18.09"
         docker run --privileged --name $(bb::container_name docker) -d \
-                    --network dind-network --network-alias docker \
-                    -v $(bb::volume_name docker):/var/lib/docker \
-                    -e DOCKER_TLS_CERTDIR=/certs \                                            
-                    -v docker-certs-ca:/certs/ca \                                       
-                    -v docker-certs-client:/certs/client \ 
-                    ${dindimg}
+            --network dind-network --network-alias docker \
+            -e DOCKER_TLS_CERTDIR=/certs \
+            -v docker-certs-ca:/certs/ca \
+            -v docker-certs-client:/certs/client \
+            docker:dind
     fi
     docker logs $(bb::container_name docker)
     INFO "prepare docker success"
