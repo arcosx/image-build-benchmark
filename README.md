@@ -1,4 +1,4 @@
-# image-build-benchmark
+# image-build-benchmark [![CI](https://github.com/arcosx/image-build-benchmark/actions/workflows/main.yml/badge.svg)](https://github.com/arcosx/image-build-benchmark/actions/workflows/main.yml)
 
 Testing the speed and size of container image builds.
 
