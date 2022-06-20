@@ -46,8 +46,11 @@ function bb::test(){
         local size="$(${builder}::imageSize ${dir} ${dindimg})"
 
         if [ "$builder" == "docker" ]; then
+            local size="$(${builder}::imageSize ${dir} ${dindimg})"
             echo "docker,${dindimg},1,${took},${size}" >> ${csv}    
         else
+            buildkit::buildexport ${dir}
+            local size="$(${builder}::imageSize)"
             echo "buildkit,latest,1,${took},${size}" >> ${csv}
         fi
 
@@ -60,11 +63,12 @@ function bb::test(){
         local end=$(date +%s.%N)
         local took=$(echo ${end}-${begin} | bc)
 
-        local size="$(${builder}::imageSize ${dir} ${dindimg})"
-
         if [ "$builder" == "docker" ]; then
+            local size="$(${builder}::imageSize ${dir} ${dindimg})"
             echo "docker,${dindimg},2,${took},${size}" >> ${csv}    
         else
+            buildkit::buildexport ${dir}
+            local size="$(${builder}::imageSize)"
             echo "buildkit,latest,2,${took},${size}" >> ${csv}
         fi
 
@@ -185,7 +189,8 @@ function buildkit::prune(){
     docker volume rm -f $(bb::volume_name buildkit)
 }
 
-function buildkit::imageSize(){
+function buildkit::buildexport(){
+    INFO "begin buildkit buildexport"
     local dir="$1"
     docker run \
            -v ${dir}:/workspace -w /workspace \
@@ -194,8 +199,12 @@ function buildkit::imageSize(){
            -e BUILDKIT_HOST=tcp://buildkit:1234 \
            --entrypoint buildctl \
            ${BUILDKIT_IMAGE} \
-           build --frontend=dockerfile.v0 --local context=. --local dockerfile=. --output type=docker,name=buildkit-build > buildkit-build.tar > /dev/null 2>&1
-    docker load -i buildkit-build.tar > /dev/null
+           build --frontend=dockerfile.v0 --local context=. --local dockerfile=. --output type=docker,name=buildkit-build > /tmp/buildkit-build.tar
+    INFO "end buildkit buildexport"
+}
+
+function buildkit::imageSize(){
+    docker load -i /tmp/buildkit-build.tar > /dev/null
     echo $(docker images buildkit-build --format "{{.Size}}")
 }
 
