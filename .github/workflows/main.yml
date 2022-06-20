@@ -25,38 +25,38 @@ jobs:
           ./build.sh dockerfiles/01 out.csv 2 docker:18.09-dind buildkit
           echo "benchmark end."
           cat out.csv
-  buildkit_pytorchnocuda:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: build
-        run: |
-          echo "start image build benchmark..."
-          ./build.sh dockerfiles/pytorchnocuda out.csv 2 docker:18.09-dind buildkit
-          echo "benchmark end."
-          cat out.csv
+  # buildkit_pytorchnocuda:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: build
+  #       run: |
+  #         echo "start image build benchmark..."
+  #         ./build.sh dockerfiles/pytorchnocuda out.csv 2 docker:18.09-dind buildkit
+  #         echo "benchmark end."
+  #         cat out.csv
 
-  buildkit_pytorchcuda:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: build
-        run: |
-          echo "start image build benchmark..."
-          ./build.sh dockerfiles/pytorchcuda out.csv 2 docker:18.09-dind buildkit
-          echo "benchmark end."
-          cat out.csv
+  # buildkit_pytorchcuda:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: build
+  #       run: |
+  #         echo "start image build benchmark..."
+  #         ./build.sh dockerfiles/pytorchcuda out.csv 2 docker:18.09-dind buildkit
+  #         echo "benchmark end."
+  #         cat out.csv
 
-  docker_18_09_01:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: build
-        run: |
-          echo "start image build benchmark..."
-          ./build.sh dockerfiles/01 out.csv 2 docker:18.09-dind docker
-          echo "benchmark end."
-          cat out.csv
+  # docker_18_09_01:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: build
+  #       run: |
+  #         echo "start image build benchmark..."
+  #         ./build.sh dockerfiles/01 out.csv 2 docker:18.09-dind docker
+  #         echo "benchmark end."
+  #         cat out.csv
 
 #   docker_18_09_pytorchnocuda:
 #     runs-on: ubuntu-latest
