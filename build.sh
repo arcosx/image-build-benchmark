@@ -43,7 +43,7 @@ function bb::test(){
         ${builder}::build ${dir} ${dindimg}
         local end=$(date +%s.%N)
         local took=$(echo ${end}-${begin} | bc)
-        local size="$(${builder}::imagesSize ${dindimg})"
+        local size=$(${builder}::imageSize ${dindimg})
 
         if [ "$builder" == "docker" ]; then
             echo "docker,${dindimg},1,${took},${size}" >> ${csv}    
@@ -59,8 +59,8 @@ function bb::test(){
         ${builder}::build ${dir} ${dindimg}
         local end=$(date +%s.%N)
         local took=$(echo ${end}-${begin} | bc)
-        
-        local size="$(${builder}::imagesSize ${dindimg})"
+
+        local size="$(${builder}::imageSize ${dindimg})"
 
         if [ "$builder" == "docker" ]; then
             echo "docker,${dindimg},1,${took},${size}" >> ${csv}    
