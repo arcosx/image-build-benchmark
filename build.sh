@@ -63,9 +63,9 @@ function bb::test(){
         local size="$(${builder}::imageSize ${dindimg})"
 
         if [ "$builder" == "docker" ]; then
-            echo "docker,${dindimg},1,${took},${size}" >> ${csv}    
+            echo "docker,${dindimg},2,${took},${size}" >> ${csv}    
         else
-            echo "buildkit,latest,1,${took},${size}" >> ${csv}
+            echo "buildkit,latest,2,${took},${size}" >> ${csv}
         fi
 
 
@@ -215,6 +215,11 @@ INFO "DEBUG CSV ${CSV}"
 INFO "DEBUG N ${N}"
 INFO "DEBUG DINDIMG ${DINDIMG}"
 INFO "DEBUG BUILDER ${BUILDER}"
+
+INFO "Linux Version: $(cat /proc/version)"
+INFO "MemTotal: $(grep MemTotal /proc/meminfo)"
+INFO "CPU Core: $(grep "cpu cores" /proc/cpuinfo)"
+INFO "CPU MODEL: $(grep "model name" /proc/cpuinfo)"
 
 if [ "$BUILDER" == "both" ]; then
     INFO "Both docker and buildkit will be test"
