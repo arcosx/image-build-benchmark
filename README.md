@@ -2,8 +2,6 @@
 
 Testing the speed and size of container image builds.
 
-**The project is still in progress, so you can wait.**
-
 
 ### Usage
 
