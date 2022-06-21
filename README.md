@@ -8,7 +8,7 @@ Testing the speed and size of container image builds.
 ### Usage
 
 #### Only see the result
-Look at this summary report ! [TODO]
+Look at this [summary](https://github.com/arcosx/image-build-benchmark/issues/1) ! 
 
 
 #### for your own images
